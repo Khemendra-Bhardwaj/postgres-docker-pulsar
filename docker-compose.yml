@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres 
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123 
+      POSTGRES_DB: mydb
+  
+  pulsar:
+    image: apachepulsar/pulsar:latest
+    container_name: pulsar-container
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    command: ["bin/pulsar", "standalone"]
+
+  go-api:
+    build: .
+    container_name: go-api-container
+    ports:
+      - "8081:8080"  # Changed to avoid conflict
+    depends_on:
+      - postgres
+      - pulsar
+    environment:
+      PULSAR_URL: pulsar://pulsar:6650
+
+ 
+
+
